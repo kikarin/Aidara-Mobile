@@ -1,0 +1,305 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+
+  /* Aidara Sports Theme - Light Mode */
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --surface: #FFFFFF;
+  --surface-2: #F1F5F9;
+
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+
+  --primary: #DC2626;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+
+  --accent: #EAB308;
+  --accent-foreground: #0F172A;
+  --accent-2: #2563EB;
+
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --success: #16A34A;
+  --warning: #D97706;
+  --error: #DC2626;
+
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --input-background: #FFFFFF;
+  --switch-background: #E2E8F0;
+
+  --ring: #DC2626;
+
+  /* Sport Categories - Light Mode */
+  --sport-physical: #2563EB;
+  --sport-strategy: #9333EA;
+  --sport-technique: #16A34A;
+  --sport-mental: #EAB308;
+  --sport-recovery: #D97706;
+
+  /* Medals - Light Mode */
+  --medal-gold: #EAB308;
+  --medal-silver: #71717A;
+  --medal-bronze: #C2410C;
+
+  /* Charts - Light Mode */
+  --chart-1: #2563EB;
+  --chart-2: #16A34A;
+  --chart-3: #EAB308;
+  --chart-4: #9333EA;
+  --chart-5: #D97706;
+
+  /* Trend Colors - Light Mode */
+  --trend-up: #16A34A;
+  --trend-down: #DC2626;
+  --trend-stable: #64748B;
+
+  /* Radius - Premium rounded */
+  --radius: 1.25rem;
+  --radius-card: 1.75rem;
+  --radius-button: 1rem;
+
+  /* Typography */
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-normal: 400;
+
+  /* Shadows - Light Mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.dark {
+  /* Aidara Sports Theme - Dark Mode */
+  --background: #09090B;
+  --foreground: #FFFFFF;
+  --surface: #111827;
+  --surface-2: #18181B;
+
+  --card: #111827;
+  --card-foreground: #FFFFFF;
+  --popover: #18181B;
+  --popover-foreground: #FFFFFF;
+
+  --primary: #DC2626;
+  --primary-foreground: #FFFFFF;
+  --secondary: #18181B;
+  --secondary-foreground: #FFFFFF;
+
+  --muted: #18181B;
+  --muted-foreground: #A1A1AA;
+
+  --accent: #EAB308;
+  --accent-foreground: #09090B;
+  --accent-2: #2563EB;
+
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --success: #16A34A;
+  --warning: #D97706;
+  --error: #DC2626;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+  --input-background: #18181B;
+  --switch-background: #3f3f46;
+
+  --ring: #DC2626;
+
+  /* Sport Categories - Dark Mode */
+  --sport-physical: #3B82F6;
+  --sport-strategy: #A855F7;
+  --sport-technique: #22C55E;
+  --sport-mental: #FACC15;
+  --sport-recovery: #F59E0B;
+
+  /* Medals - Dark Mode */
+  --medal-gold: #FACC15;
+  --medal-silver: #D1D5DB;
+  --medal-bronze: #D97706;
+
+  /* Charts - Dark Mode */
+  --chart-1: #3B82F6;
+  --chart-2: #22C55E;
+  --chart-3: #FACC15;
+  --chart-4: #A855F7;
+  --chart-5: #F59E0B;
+
+  /* Trend Colors - Dark Mode */
+  --trend-up: #22C55E;
+  --trend-down: #DC2626;
+  --trend-stable: #A1A1AA;
+
+  /* Shadows - Dark Mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 0 15px -3px rgba(220, 38, 38, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 0 20px -5px rgba(220, 38, 38, 0.15);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-2: var(--accent-2);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+
+  --color-sport-physical: var(--sport-physical);
+  --color-sport-strategy: var(--sport-strategy);
+  --color-sport-technique: var(--sport-technique);
+  --color-sport-mental: var(--sport-mental);
+  --color-sport-recovery: var(--sport-recovery);
+
+  --color-medal-gold: var(--medal-gold);
+  --color-medal-silver: var(--medal-silver);
+  --color-medal-bronze: var(--medal-bronze);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-trend-up: var(--trend-up);
+  --color-trend-down: var(--trend-down);
+  --color-trend-stable: var(--trend-stable);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-card: var(--radius-card);
+  --radius-button: var(--radius-button);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-family: var(--font-satoshi);
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area padding for mobile */
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+
+  /* Bottom tab bar clearance — matches floating nav (nav + mb-4 + safe area) */
+  :root {
+    --bottom-tab-bar-height: 7.5rem;
+  }
+
+  .fixed-above-tab-bar {
+    position: fixed;
+    bottom: calc(var(--bottom-tab-bar-height) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pb-tab-bar-and-action {
+    padding-bottom: calc(var(--bottom-tab-bar-height) + 4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pb-tab-bar {
+    padding-bottom: calc(var(--bottom-tab-bar-height) + env(safe-area-inset-bottom, 0px));
+  }
+}

@@ -1,5 +1,10 @@
 import * as React from "react";
-import { useCaborLastThreePemeriksaan, useCaborList, useCaborRanking } from "@/hooks/use-cabor";
+import {
+  useCaborLastThreePemeriksaan,
+  useCaborList,
+  useCaborPeserta,
+  useCaborRanking,
+} from "@/hooks/use-cabor";
 import { useProfileBiodata } from "@/hooks/use-profile";
 import {
   averageOverallScore,
@@ -30,16 +35,31 @@ export function useHomeDashboard() {
 
   const rankingQuery = useCaborRanking(caborId ?? "");
   const rankingList = rankingQuery.data?.ranking_perbandingan_3_tes_terakhir ?? [];
+  const totalRankingList = rankingQuery.data?.ranking_total_rata_rata ?? [];
 
   const isStaff = role === "pelatih" || role === "tenaga_pendukung";
-  const topAthlete = React.useMemo(
-    () => (isStaff ? findTopAthlete(rankingList) : null),
-    [isStaff, rankingList]
-  );
+  const caborPesertaQuery = useCaborPeserta(isStaff && caborId ? caborId : "");
+
+  const topAthlete = React.useMemo(() => {
+    if (!isStaff) return null;
+
+    const fromRanking = findTopAthlete(rankingList, totalRankingList);
+    if (fromRanking) return fromRanking;
+
+    const firstAtlet = caborPesertaQuery.data?.atlet?.[0];
+    if (!firstAtlet) return null;
+
+    return {
+      peserta_id: firstAtlet.id,
+      peserta_type: "App\\Models\\Atlet",
+      nama: firstAtlet.nama,
+      nilai_rata_rata: null,
+    };
+  }, [isStaff, rankingList, totalRankingList, caborPesertaQuery.data?.atlet]);
 
   const targetPesertaId = isStaff ? topAthlete?.peserta_id : pesertaId;
   const targetPesertaType = isStaff
-    ? topAthlete?.peserta_type ?? roleToPesertaType("atlet")
+    ? topAthlete?.peserta_type ?? "App\\Models\\Atlet"
     : roleToPesertaType(role);
 
   const lastThreeQuery = useCaborLastThreePemeriksaan(
@@ -55,13 +75,19 @@ export function useHomeDashboard() {
 
   const participantRank = React.useMemo(() => {
     if (!pesertaId || isStaff) return null;
-    return findParticipantRank(rankingList, pesertaId, roleToPesertaType(role as PesertaRole));
-  }, [pesertaId, isStaff, rankingList, role]);
+    return findParticipantRank(
+      rankingList,
+      totalRankingList,
+      pesertaId,
+      roleToPesertaType(role as PesertaRole)
+    );
+  }, [pesertaId, isStaff, rankingList, totalRankingList, role]);
 
   const isLoading =
     biodataQuery.isLoading ||
     caborListQuery.isLoading ||
     rankingQuery.isLoading ||
+    (isStaff && caborPesertaQuery.isLoading) ||
     lastThreeQuery.isLoading;
 
   return {
@@ -83,6 +109,7 @@ export function useHomeDashboard() {
         biodataQuery.refetch(),
         caborListQuery.refetch(),
         rankingQuery.refetch(),
+        isStaff ? caborPesertaQuery.refetch() : Promise.resolve(),
         lastThreeQuery.refetch(),
       ]);
     },

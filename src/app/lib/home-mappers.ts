@@ -1,4 +1,8 @@
-import type { CaborLastThreePemeriksaan, CaborRankingPerbandingan3Tes } from "@/api/cabor-types";
+import type {
+  CaborLastThreePemeriksaan,
+  CaborRankingEntry,
+  CaborRankingPerbandingan3Tes,
+} from "@/api/cabor-types";
 import type { PesertaRole } from "@/api/profile-types";
 
 export interface RadarPoint {
@@ -73,27 +77,71 @@ export function averageOverallScore(tests: CaborLastThreePemeriksaan[]): number 
   return Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10;
 }
 
+function isAtletEntry(pesertaType: string): boolean {
+  return pesertaType === PESERTA_TYPE_ATLET || pesertaType.endsWith("Atlet");
+}
+
 export function findParticipantRank(
-  ranking: CaborRankingPerbandingan3Tes[],
+  perbandinganRanking: CaborRankingPerbandingan3Tes[],
+  totalRanking: CaborRankingEntry[],
   pesertaId: number,
   pesertaType: string
 ): { rank: number; nilai: number; total: number } | null {
-  const athletes = ranking.filter((entry) => entry.peserta_type === PESERTA_TYPE_ATLET);
-  const index = athletes.findIndex(
-    (entry) => entry.peserta_id === pesertaId && entry.peserta_type === pesertaType
+  const athletesFromPerbandingan = perbandinganRanking.filter((entry) =>
+    isAtletEntry(entry.peserta_type)
+  );
+  const perbandinganIndex = athletesFromPerbandingan.findIndex(
+    (entry) => entry.peserta_id === pesertaId
   );
 
-  if (index < 0) return null;
+  if (perbandinganIndex >= 0) {
+    return {
+      rank: perbandinganIndex + 1,
+      nilai: athletesFromPerbandingan[perbandinganIndex].nilai_rata_rata,
+      total: athletesFromPerbandingan.length,
+    };
+  }
+
+  const athletesFromTotal = totalRanking.filter((entry) => isAtletEntry(entry.peserta_type));
+  const totalIndex = athletesFromTotal.findIndex((entry) => entry.peserta_id === pesertaId);
+
+  if (totalIndex < 0) return null;
 
   return {
-    rank: index + 1,
-    nilai: athletes[index].nilai_rata_rata,
-    total: athletes.length,
+    rank: totalIndex + 1,
+    nilai: athletesFromTotal[totalIndex].nilai,
+    total: athletesFromTotal.length,
   };
 }
 
+export interface FeaturedAthlete {
+  peserta_id: number;
+  peserta_type: string;
+  nama: string;
+  nilai_rata_rata: number | null;
+}
+
 export function findTopAthlete(
-  ranking: CaborRankingPerbandingan3Tes[]
-): CaborRankingPerbandingan3Tes | null {
-  return ranking.find((entry) => entry.peserta_type === PESERTA_TYPE_ATLET) ?? null;
+  perbandinganRanking: CaborRankingPerbandingan3Tes[],
+  totalRanking: CaborRankingEntry[] = []
+): FeaturedAthlete | null {
+  const fromPerbandingan = perbandinganRanking.find((entry) => isAtletEntry(entry.peserta_type));
+  if (fromPerbandingan) {
+    return {
+      peserta_id: fromPerbandingan.peserta_id,
+      peserta_type: fromPerbandingan.peserta_type,
+      nama: fromPerbandingan.nama,
+      nilai_rata_rata: fromPerbandingan.nilai_rata_rata,
+    };
+  }
+
+  const fromTotal = totalRanking.find((entry) => isAtletEntry(entry.peserta_type));
+  if (!fromTotal) return null;
+
+  return {
+    peserta_id: fromTotal.peserta_id,
+    peserta_type: fromTotal.peserta_type,
+    nama: fromTotal.nama,
+    nilai_rata_rata: fromTotal.nilai,
+  };
 }

@@ -2,6 +2,7 @@ import type {
   BulkUpdatePesertaEntry,
   ParameterStatistikHistory,
   ParameterStatistikPeserta,
+  PesertaParameterValue,
   PemeriksaanApiItem,
   PemeriksaanDetailApiItem,
   PemeriksaanPesertaApiItem,
@@ -95,6 +96,25 @@ export function mapPesertaTypeToRole(pesertaType: string): ParticipantRole {
 export function mapRoleToJenisPeserta(role: ParticipantRole | "semua"): string {
   if (role === "semua") return "all";
   return role;
+}
+
+/** Parameter fields for input form — always uses pemeriksaan_parameter id as parameter_id */
+export function getParticipantParameterFields(
+  participant: PemeriksaanPesertaApiItem,
+  pemeriksaanParameters: { id: number; parameter_id: number; nama_parameter: string; satuan: string }[] = []
+): PesertaParameterValue[] {
+  if (participant.parameters.length > 0) {
+    return participant.parameters;
+  }
+
+  return pemeriksaanParameters.map((p) => ({
+    parameter_id: p.id,
+    mst_parameter_id: p.parameter_id,
+    nama_parameter: p.nama_parameter,
+    satuan: p.satuan,
+    nilai: "",
+    trend: "",
+  }));
 }
 
 export function mapPemeriksaanItem(item: PemeriksaanApiItem): Pemeriksaan {

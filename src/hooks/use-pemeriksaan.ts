@@ -108,16 +108,18 @@ export function useDeletePemeriksaan() {
   });
 }
 
-export function useBulkUpdatePesertaParameter(pemeriksaanId: string) {
+export function useBulkUpdatePesertaParameter(pemeriksaanId: string, jenisPeserta?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: BulkUpdatePesertaPayload) =>
       pemeriksaanApi.bulkUpdatePesertaParameter(Number(pemeriksaanId), payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: pemeriksaanKeys.detail(pemeriksaanId) });
-      queryClient.invalidateQueries({ queryKey: pemeriksaanKeys.peserta(pemeriksaanId) });
-      queryClient.invalidateQueries({ queryKey: pemeriksaanKeys.all });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: pemeriksaanKeys.detail(pemeriksaanId) });
+      await queryClient.invalidateQueries({
+        queryKey: pemeriksaanKeys.peserta(pemeriksaanId, jenisPeserta),
+      });
+      await queryClient.invalidateQueries({ queryKey: pemeriksaanKeys.all });
     },
   });
 }

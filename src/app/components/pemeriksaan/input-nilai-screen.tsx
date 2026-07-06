@@ -13,6 +13,7 @@ import type { Pemeriksaan } from "@/app/lib/pemeriksaan-mappers";
 import {
   buildBulkUpdateEntry,
   getParticipantCompletionStatus,
+  getParticipantParameterFields,
   mapPesertaTypeToRole,
   mapRoleToJenisPeserta,
   mapTrendFromApi,
@@ -71,7 +72,7 @@ export const InputNilaiScreen: React.FC<InputNilaiScreenProps> = ({ pemeriksaan,
 
   const jenisFilter = isViewOnly ? "atlet" : mapRoleToJenisPeserta(activeRole);
   const pesertaQuery = usePemeriksaanPeserta(pemeriksaan.id, jenisFilter);
-  const bulkMutation = useBulkUpdatePesertaParameter(pemeriksaan.id);
+  const bulkMutation = useBulkUpdatePesertaParameter(pemeriksaan.id, jenisFilter);
 
   const apiPeserta = pesertaQuery.data?.peserta ?? [];
   const parameters = pesertaQuery.data?.parameters ?? [];
@@ -91,14 +92,7 @@ export const InputNilaiScreen: React.FC<InputNilaiScreenProps> = ({ pemeriksaan,
 
   React.useEffect(() => {
     if (apiPeserta.length > 0) {
-      setValues((prev) => {
-        const next = initValuesFromPeserta(apiPeserta);
-        Object.keys(prev).forEach((id) => {
-          const numId = Number(id);
-          if (next[numId]) next[numId] = prev[numId];
-        });
-        return next;
-      });
+      setValues(initValuesFromPeserta(apiPeserta));
     }
   }, [apiPeserta]);
 
@@ -125,7 +119,7 @@ export const InputNilaiScreen: React.FC<InputNilaiScreenProps> = ({ pemeriksaan,
     }));
 
   const getCompletionStatus = (peserta: PemeriksaanPesertaApiItem) => {
-    const paramVals = peserta.parameters.map((p) => ({
+    const paramVals = getParticipantParameterFields(peserta, parameters).map((p) => ({
       nilai: getParamVal(peserta.id, p.parameter_id).nilai,
     }));
     return getParticipantCompletionStatus(paramVals);
@@ -143,6 +137,7 @@ export const InputNilaiScreen: React.FC<InputNilaiScreenProps> = ({ pemeriksaan,
         values[peserta.id]?.catatan
       );
       await bulkMutation.mutateAsync({ data: [entry] });
+      await pesertaQuery.refetch();
       toast.success(`Nilai ${peserta.peserta.nama} disimpan`);
       setExpandedId(null);
     } catch (error) {
@@ -162,6 +157,7 @@ export const InputNilaiScreen: React.FC<InputNilaiScreenProps> = ({ pemeriksaan,
         )
       );
       await bulkMutation.mutateAsync({ data });
+      await pesertaQuery.refetch();
       toast.success("Semua nilai berhasil disimpan");
     } catch (error) {
       toast.error(parseApiError(error).message);
@@ -293,7 +289,7 @@ export const InputNilaiScreen: React.FC<InputNilaiScreenProps> = ({ pemeriksaan,
 
                 {isExpanded && (
                   <div className="border-t border-border bg-surface-2 px-4 py-3 space-y-4">
-                    {(parameters.length > 0 ? parameters : participant.parameters).map((param) => {
+                    {getParticipantParameterFields(participant, parameters).map((param) => {
                       const paramId = param.parameter_id;
                       const paramNama = param.nama_parameter;
                       const satuan = param.satuan;

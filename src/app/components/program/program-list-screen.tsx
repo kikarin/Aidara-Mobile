@@ -396,7 +396,7 @@ export const ProgramListScreen: React.FC<ProgramListScreenProps> = ({
       {canManageProgram && onCreateProgram && (
         <button
           onClick={onCreateProgram}
-          className="fixed bottom-24 right-4 z-40 flex items-center gap-2 bg-primary text-white px-4 py-3 rounded-2xl shadow-lg active:scale-95 transition-transform font-semibold text-sm"
+          className="fab-above-tab-bar flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-white shadow-lg transition-transform active:scale-95"
         >
           <Plus className="h-5 w-5" />
           Tambah Program

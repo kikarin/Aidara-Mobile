@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { ArrowLeft, Calendar, ChevronDown, X, Search, CheckCircle, Clock, AlertCircle, Loader2 } from "lucide-react";
+import { DateInput } from "../ui/date-input";
+import { ArrowLeft, ChevronDown, X, Search, CheckCircle, Clock, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "../ui/utils";
 import { toast } from "sonner";
 import {
@@ -207,15 +208,11 @@ export const PemeriksaanFormScreen: React.FC<PemeriksaanFormScreenProps> = ({ on
         <section>
           <SectionHeader label="Jadwal" />
           <FieldWrap label="Tanggal Pemeriksaan" apiField="tanggal_pemeriksaan" required>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              <Input
-                type="date"
-                value={form.tanggal}
-                onChange={(e) => setForm((f) => ({ ...f, tanggal: e.target.value }))}
-                className="pl-9 rounded-xl bg-input-background border-border text-sm"
-              />
-            </div>
+            <DateInput
+              value={form.tanggal}
+              onChange={(e) => setForm((f) => ({ ...f, tanggal: e.target.value }))}
+              className="rounded-xl text-sm"
+            />
           </FieldWrap>
         </section>
 

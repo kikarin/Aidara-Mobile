@@ -35,7 +35,7 @@ export const LoginConsentDialog: React.FC<LoginConsentDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[400px] rounded-2xl gap-0 p-0 overflow-hidden">
+      <DialogContent className="flex max-h-[90vh] max-w-[400px] flex-col gap-0 overflow-hidden rounded-2xl p-0">
         <div className="bg-gradient-to-br from-primary/10 via-surface to-surface px-6 pt-6 pb-4 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -50,7 +50,7 @@ export const LoginConsentDialog: React.FC<LoginConsentDialogProps> = ({
           </div>
         </div>
 
-        <div className="px-6 py-4 space-y-4 max-h-[50vh] overflow-y-auto">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-4">
           <div className="space-y-3 text-sm text-muted-foreground leading-relaxed">
             <p>
               Aidara memproses data pribadi Anda (identitas, data olahraga, pemeriksaan, dan dokumen)
@@ -99,24 +99,24 @@ export const LoginConsentDialog: React.FC<LoginConsentDialogProps> = ({
           </label>
         </div>
 
-        <DialogFooter className="px-6 py-4 border-t border-border sm:justify-stretch gap-2">
+        <DialogFooter className="shrink-0 flex-col gap-3 border-t border-border px-6 py-4 sm:flex-col">
           <Button
             type="button"
-            variant="outline"
-            className="flex-1"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            Batal
-          </Button>
-          <Button
-            type="button"
-            className="flex-1"
+            className="h-12 min-h-12 w-full"
             disabled={!agreed || loading}
             loading={loading}
             onClick={onConfirm}
           >
             Lanjutkan Masuk
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 min-h-12 w-full"
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
+            Batal
           </Button>
         </DialogFooter>
       </DialogContent>

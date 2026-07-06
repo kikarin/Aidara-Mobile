@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { DateInput } from "../ui/date-input";
 import { Textarea } from "../ui/textarea";
-import { ArrowLeft, Calendar, ChevronDown, Clock } from "lucide-react";
+import { ArrowLeft, ChevronDown, Clock } from "lucide-react";
 import { cn } from "../ui/utils";
 import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
@@ -386,26 +387,18 @@ export const ProgramFormScreen: React.FC<ProgramFormScreenProps> = ({
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <FieldWrapper label="Tanggal Mulai" apiField="periode_mulai" required>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    type="date"
-                    value={form.periode_mulai}
-                    onChange={set("periode_mulai")}
-                    className="pl-9 rounded-xl bg-input-background border-border text-sm"
-                  />
-                </div>
+                <DateInput
+                  value={form.periode_mulai}
+                  onChange={set("periode_mulai")}
+                  className="rounded-xl text-sm"
+                />
               </FieldWrapper>
               <FieldWrapper label="Tanggal Selesai" apiField="periode_selesai" required>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                  <Input
-                    type="date"
-                    value={form.periode_selesai}
-                    onChange={set("periode_selesai")}
-                    className="pl-9 rounded-xl bg-input-background border-border text-sm"
-                  />
-                </div>
+                <DateInput
+                  value={form.periode_selesai}
+                  onChange={set("periode_selesai")}
+                  className="rounded-xl text-sm"
+                />
               </FieldWrapper>
             </div>
 

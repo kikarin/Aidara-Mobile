@@ -1,5 +1,5 @@
 import * as React from "react";
-import { X, Camera, MapPin, Clock, AlertTriangle, CheckCircle, Loader2 } from "lucide-react";
+import { X, Camera, MapPin, Clock, AlertTriangle, CheckCircle, Loader2, SwitchCamera } from "lucide-react";
 import { cn } from "../ui/utils";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
@@ -20,16 +20,44 @@ export interface CapturedPhoto {
   address?: string;
 }
 
+type FacingMode = "user" | "environment";
+
 interface GpsCameraModalProps {
   open: boolean;
   onClose: () => void;
   onCapture: (photo: CapturedPhoto) => void;
+  /** Default camera: "user" = front/selfie, "environment" = rear. */
+  defaultFacingMode?: FacingMode;
 }
 
 type GpsState = "loading" | "success" | "error";
 type AddressState = "idle" | "loading" | "success" | "error";
 
-export const GpsCameraModal: React.FC<GpsCameraModalProps> = ({ open, onClose, onCapture }) => {
+async function getCameraStream(preferredFacing: FacingMode): Promise<MediaStream> {
+  const attempts: MediaStreamConstraints[] = [
+    { video: { facingMode: { exact: preferredFacing } } },
+    { video: { facingMode: preferredFacing } },
+    { video: { facingMode: preferredFacing === "user" ? "environment" : "user" } },
+    { video: true },
+  ];
+
+  let lastError: unknown;
+  for (const constraints of attempts) {
+    try {
+      return await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
+
+export const GpsCameraModal: React.FC<GpsCameraModalProps> = ({
+  open,
+  onClose,
+  onCapture,
+  defaultFacingMode = "user",
+}) => {
   const [gpsState, setGpsState] = React.useState<GpsState>("loading");
   const [addressState, setAddressState] = React.useState<AddressState>("idle");
   const [coords, setCoords] = React.useState<{ lat: number; lng: number } | null>(null);
@@ -37,6 +65,7 @@ export const GpsCameraModal: React.FC<GpsCameraModalProps> = ({ open, onClose, o
   const [currentTime, setCurrentTime] = React.useState(new Date());
   const [capturing, setCapturing] = React.useState(false);
   const [cameraActive, setCameraActive] = React.useState(false);
+  const [facingMode, setFacingMode] = React.useState<FacingMode>(defaultFacingMode);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const streamRef = React.useRef<MediaStream | null>(null);
   const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
@@ -84,12 +113,28 @@ export const GpsCameraModal: React.FC<GpsCameraModalProps> = ({ open, onClose, o
   }, [open]);
 
   React.useEffect(() => {
+    if (open) setFacingMode(defaultFacingMode);
+  }, [open, defaultFacingMode]);
+
+  React.useEffect(() => {
     if (!open) return;
+
+    let cancelled = false;
+    setCameraActive(false);
+
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment", aspectRatio: 4 / 3 },
-        });
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((t) => t.stop());
+          streamRef.current = null;
+        }
+
+        const stream = await getCameraStream(facingMode);
+        if (cancelled) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -97,17 +142,23 @@ export const GpsCameraModal: React.FC<GpsCameraModalProps> = ({ open, onClose, o
         }
         setCameraActive(true);
       } catch {
-        setCameraActive(false);
+        if (!cancelled) setCameraActive(false);
       }
     };
+
     startCamera();
     return () => {
+      cancelled = true;
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
       }
     };
-  }, [open]);
+  }, [open, facingMode]);
+
+  const toggleFacingMode = () => {
+    setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
+  };
 
   const handleClose = () => {
     if (streamRef.current) {
@@ -124,10 +175,11 @@ export const GpsCameraModal: React.FC<GpsCameraModalProps> = ({ open, onClose, o
 
     try {
       const timestamp = new Date();
-      const { blob, dataUrl } = await captureGeoPhotoFromVideo(videoRef.current, {
-        timestamp,
-        address,
-      });
+      const { blob, dataUrl } = await captureGeoPhotoFromVideo(
+        videoRef.current,
+        { timestamp, address },
+        { mirror: facingMode === "user" }
+      );
 
       const filename = `foto-absen-${timestamp.getTime()}.jpg`;
       const file = new File([blob], filename, { type: "image/jpeg" });
@@ -164,7 +216,10 @@ export const GpsCameraModal: React.FC<GpsCameraModalProps> = ({ open, onClose, o
           autoPlay
           playsInline
           muted
-          className="absolute inset-0 w-full h-full object-cover"
+          className={cn(
+            "absolute inset-0 w-full h-full object-cover",
+            facingMode === "user" && cameraActive && "scale-x-[-1]"
+          )}
         />
 
         {!cameraActive && (
@@ -190,8 +245,21 @@ export const GpsCameraModal: React.FC<GpsCameraModalProps> = ({ open, onClose, o
         )}
 
         <div className="absolute top-0 left-0 right-0 p-4 flex flex-col gap-0">
-          <div className="flex justify-end mb-3">
+          <div className="flex justify-between mb-3">
             <button
+              type="button"
+              onClick={toggleFacingMode}
+              disabled={!cameraActive}
+              className={cn(
+                "w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white",
+                !cameraActive && "opacity-40 cursor-not-allowed"
+              )}
+              aria-label={facingMode === "user" ? "Ganti ke kamera belakang" : "Ganti ke kamera depan"}
+            >
+              <SwitchCamera className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
               onClick={handleClose}
               className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-white"
             >

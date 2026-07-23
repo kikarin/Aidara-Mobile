@@ -146,9 +146,15 @@ export function drawGeoPhotoWatermark(
   }
 }
 
+export interface CaptureGeoPhotoOptions {
+  /** Mirror horizontally — use for front/selfie camera so saved photo matches preview. */
+  mirror?: boolean;
+}
+
 export async function captureGeoPhotoFromVideo(
   video: HTMLVideoElement,
-  watermark: GeoPhotoWatermark
+  watermark: GeoPhotoWatermark,
+  options?: CaptureGeoPhotoOptions
 ): Promise<{ blob: Blob; dataUrl: string }> {
   const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth || 640;
@@ -157,7 +163,13 @@ export async function captureGeoPhotoFromVideo(
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas tidak tersedia");
 
+  ctx.save();
+  if (options?.mirror) {
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+  }
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  ctx.restore();
   drawGeoPhotoWatermark(ctx, canvas.width, canvas.height, watermark);
 
   const blob = await new Promise<Blob>((resolve, reject) => {

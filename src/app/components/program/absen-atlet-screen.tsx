@@ -169,7 +169,12 @@ export const AbsenAtletScreen: React.FC<AbsenAtletScreenProps> = ({
         )}
       </div>
 
-      <GpsCameraModal open={cameraOpen} onClose={() => setCameraOpen(false)} onCapture={handleCapture} />
+      <GpsCameraModal
+        open={cameraOpen}
+        onClose={() => setCameraOpen(false)}
+        onCapture={handleCapture}
+        defaultFacingMode="user"
+      />
 
       {!alreadyAbsen && (
         <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-6 pt-3 bg-background/95 backdrop-blur border-t border-border">

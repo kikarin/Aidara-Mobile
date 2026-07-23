@@ -377,6 +377,7 @@ export const RekapFormScreen: React.FC<RekapFormScreenProps> = ({
         open={cameraOpen}
         onClose={() => setCameraOpen(false)}
         onCapture={handleCapture}
+        defaultFacingMode="environment"
       />
 
       {lightboxIdx !== null && (
